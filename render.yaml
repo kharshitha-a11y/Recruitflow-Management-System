@@ -1,0 +1,46 @@
+# =============================================================================
+# RecruitFlow – Render Cloud Deployment Blueprint (Single-URL Architecture)
+# Unified Docker Web Service + Managed PostgreSQL Database
+# =============================================================================
+
+services:
+  # Unified Production Service (Nginx + FastAPI + Streamlit via Supervisor)
+  - type: web
+    name: recruitflow-app
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: standard
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DB_USER
+        fromDatabase:
+          name: recruitflow-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: recruitflow-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: recruitflow-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: recruitflow-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: recruitflow-db
+          property: database
+      - key: BACKEND_API_URL
+        value: http://127.0.0.1:8000
+      - key: CORS_ORIGINS
+        value: "*"
+
+databases:
+  # Managed Render PostgreSQL Database
+  - name: recruitflow-db
+    databaseName: recruitflow
+    user: recruitflow_user
+    plan: standard
